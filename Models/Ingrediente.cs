@@ -1,9 +1,12 @@
-public class Ingrediente
+namespace RecipeApi.Models
 {
-  public required int IngredienteId { get; set; }
-  public required string Nome { get; set; }
-  public required string UnidadeMedida { get; set; }
+  public class Ingrediente
+  {
+    public required int IngredienteId { get; set; }
+    public required string Nome { get; set; }
+    public required string UnidadeMedida { get; set; }
 
-  public ICollection<ReceitaIngrediente> ReceitaIngredientes {get; set;}
+    public required ICollection<ReceitaIngrediente> ReceitaIngredientes { get; set; }
 
+  }
 }
