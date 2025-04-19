@@ -4,7 +4,7 @@ using RecipeApi.DTOs.Ingrediente;
 public class ReceitaReadDto
 {
   public int ReceitaId { get; set; }
-  public string Nome { get; set; }
-  public string ModoPreparo { get; set; }
-  public List<IngredienteInfoDto> Ingredientes { get; set; }
+  public string Nome { get; set; } = string.Empty;
+  public string ModoPreparo { get; set; } = string.Empty;
+  public required List<IngredienteInfoDto> Ingredientes { get; set; }
 }
