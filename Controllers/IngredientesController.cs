@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecipeApi.Data;
@@ -11,9 +12,11 @@ namespace RecipeApi.Controllers;
 public class IngredientesController : ControllerBase
 {
   private readonly AppDbContext _context;
-  public IngredientesController(AppDbContext context)
+  private readonly IMapper _mapper;
+  public IngredientesController(AppDbContext context, IMapper mapper)
   {
     _context = context;
+    _mapper = mapper;
   }
   [HttpGet]
   public async Task<ActionResult<IEnumerable<Ingrediente>>> GetIngredientes()
