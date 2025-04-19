@@ -26,6 +26,8 @@ public class MappingProfile : Profile
 
     CreateMap<IngredienteQuantidadeDto, ReceitaIngrediente>();
     CreateMap<Ingrediente, IngredienteReadDto>();
-    CreateMap<IngredienteReadDto, Ingrediente>();
+    CreateMap<IngredienteCreateDto, Ingrediente>();
+    CreateMap<IngredienteUpdateDto, Ingrediente>();
+
   }
 }
