@@ -9,7 +9,9 @@ public enum UnidadeMedida
   ColherSopa,
   ColherChá,
   Xicara,
-  Unidade
+  Unidade,
+
+  Pitada
 }
 
 public class Ingrediente
