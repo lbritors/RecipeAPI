@@ -12,7 +12,13 @@ public class MappingProfile : Profile
     .ForMember(dest => dest.Ingredientes, opt => opt
     .MapFrom(src => src.ReceitaIngredientes));
 
-    CreateMap<ReceitaCreateDto, Receita>();
+    CreateMap<ReceitaCreateDto, Receita>().
+    ForMember(dest => dest.ReceitaIngredientes, opt => opt
+    .MapFrom(src => src.Ingredientes));
+
+    CreateMap<ReceitaUpdateDto, Receita>()
+    .ForMember(dest => dest.ReceitaIngredientes, opt => opt
+    .MapFrom(src => src.Ingredientes));
 
     CreateMap<ReceitaIngrediente, IngredienteInfoDto>()
     .ForMember(dest => dest.IngredienteId, opt => opt
