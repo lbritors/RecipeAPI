@@ -39,6 +39,8 @@ public class IngredientesController : ControllerBase
   [HttpPost]
   public async Task<ActionResult<IngredienteReadDto>> Create(IngredienteCreateDto dto)
   {
+    if (!ModelState.IsValid) return BadRequest(ModelState);
+
     var ingrediente = _mapper.Map<Ingrediente>(dto);
     await _context.Ingredientes.AddAsync(ingrediente);
     await _context.SaveChangesAsync();
@@ -47,20 +49,30 @@ public class IngredientesController : ControllerBase
   }
 
   [HttpPut("{id}")]
-  public async Task<ActionResult<IngredienteReadDto>> Updaate(int id, IngredienteUpdateDto dto)
+  public async Task<ActionResult> Update(int id, IngredienteUpdateDto dto)
   {
+    if (id != dto.Id) return BadRequest("IDs não coincidem");
+    if (!ModelState.IsValid) return BadRequest(ModelState);
+
     var ingrediente = await _context.Ingredientes.FindAsync(id);
     if (ingrediente == null) return NotFound();
+
     _mapper.Map(dto, ingrediente);
     await _context.SaveChangesAsync();
     return NoContent();
   }
 
   [HttpDelete("{id}")]
-  public async Task<ActionResult<IngredienteReadDto>> Delete(int id)
+  public async Task<ActionResult> Delete(int id)
   {
-    var ingrediente = await _context.Ingredientes.FindAsync(id);
+    var ingrediente = await _context.Ingredientes.
+      Include(i => i.ReceitaIngredientes)
+      .FirstOrDefaultAsync(i => i.IngredienteId == id);
     if (ingrediente == null) return NotFound();
+    if (ingrediente.ReceitaIngredientes.Count > 0)
+    {
+      return BadRequest("Não é possível excluir o ingrediente, pois ele está associado a uma receita.");
+    }
     _context.Ingredientes.Remove(ingrediente);
     await _context.SaveChangesAsync();
 
