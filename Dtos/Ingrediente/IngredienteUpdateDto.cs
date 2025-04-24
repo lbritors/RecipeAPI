@@ -4,6 +4,9 @@ namespace RecipeApi.DTOs.Ingrediente;
 
 public class IngredienteUpdateDto
 {
+  [Required(ErrorMessage = "O ID do ingrediente é obrigatório.")]
+  public int Id { get; set; }
+
   [Required(ErrorMessage = "O nome do ingrediente é obrigatório.")]
   [StringLength(100, ErrorMessage = "O nome do ingrediente deve ter no máximo 100 caracteres.")]
   public string Nome { get; set; } = string.Empty;
