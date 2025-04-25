@@ -58,7 +58,7 @@ public class IngredientesController : ControllerBase
   public async Task<ActionResult> Update(int id, IngredienteUpdateDto dto)
   {
 
-    if (id != dto.Id)
+    if (id != dto.IngredienteId)
     {
       _logger.LogWarning("Ingrediente {id} com id não coincidente", id);
       return BadRequest("IDs não coincidem");

@@ -33,9 +33,18 @@ public class MappingProfile : Profile
     .ForMember(dest => dest.Quantidade, opt => opt
     .MapFrom(src => src.Quantidade));
 
-    CreateMap<Ingrediente, IngredienteReadDto>();
-    CreateMap<IngredienteCreateDto, Ingrediente>();
-    CreateMap<IngredienteUpdateDto, Ingrediente>();
+    CreateMap<Ingrediente, IngredienteReadDto>()
+    .ForMember(dest => dest.UnidadeMedida, opt => opt
+    .MapFrom(src => src.UnidadeMedida.ToString()));
+    CreateMap<IngredienteCreateDto, Ingrediente>()
+    .ForMember(dest => dest.UnidadeMedida, opt => opt
+    .MapFrom(src => Enum.Parse<UnidadeMedida>(src.UnidadeMedida, true)));
 
+    CreateMap<IngredienteUpdateDto, Ingrediente>()
+    .ForMember(dest => dest.IngredienteId, opt => opt
+    .MapFrom(src => src.IngredienteId))
+    .ForMember(dest => dest.UnidadeMedida, opt => opt
+    .MapFrom(src => Enum.Parse<UnidadeMedida>(src.UnidadeMedida, true)))
+    .ForMember(dest => dest.ReceitaIngredientes, opt => opt.Ignore());
   }
 }
