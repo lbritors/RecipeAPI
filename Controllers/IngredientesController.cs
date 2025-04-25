@@ -14,10 +14,13 @@ public class IngredientesController : ControllerBase
 {
   private readonly AppDbContext _context;
   private readonly IMapper _mapper;
-  public IngredientesController(AppDbContext context, IMapper mapper)
+
+  private readonly ILogger<IngredientesController> _logger;
+  public IngredientesController(AppDbContext context, IMapper mapper, ILogger<IngredientesController> logger)
   {
     _context = context;
     _mapper = mapper;
+    _logger = logger;
   }
 
   [HttpGet]
@@ -39,8 +42,12 @@ public class IngredientesController : ControllerBase
   [HttpPost]
   public async Task<ActionResult<IngredienteReadDto>> Create(IngredienteCreateDto dto)
   {
-    if (!ModelState.IsValid) return BadRequest(ModelState);
+    if (!ModelState.IsValid)
+    {
+      _logger.LogWarning("Model state não válido {Errors}", ModelState);
 
+      return BadRequest(ModelState);
+    }
     var ingrediente = _mapper.Map<Ingrediente>(dto);
     await _context.Ingredientes.AddAsync(ingrediente);
     await _context.SaveChangesAsync();
@@ -51,7 +58,12 @@ public class IngredientesController : ControllerBase
   [HttpPut("{id}")]
   public async Task<ActionResult> Update(int id, IngredienteUpdateDto dto)
   {
-    if (id != dto.Id) return BadRequest("IDs não coincidem");
+
+    if (id != dto.Id)
+    {
+      _logger.LogWarning("Ingrediente {id} não encontrado", id);
+      return BadRequest("IDs não coincidem");
+    }
     if (!ModelState.IsValid) return BadRequest(ModelState);
 
     var ingrediente = await _context.Ingredientes.FindAsync(id);
@@ -59,23 +71,26 @@ public class IngredientesController : ControllerBase
 
     _mapper.Map(dto, ingrediente);
     await _context.SaveChangesAsync();
+    _logger.LogInformation("Ingrediente {id} atualizado com sucesso", id);
     return NoContent();
   }
 
   [HttpDelete("{id}")]
   public async Task<ActionResult> Delete(int id)
   {
+    _logger.LogInformation("Tenteando excluir ingrediente com id: {id}", id);
     var ingrediente = await _context.Ingredientes.
       Include(i => i.ReceitaIngredientes)
       .FirstOrDefaultAsync(i => i.IngredienteId == id);
     if (ingrediente == null) return NotFound();
     if (ingrediente.ReceitaIngredientes.Count > 0)
     {
+      _logger.LogWarning("Ingrediente com {id} não encontrado", id);
       return BadRequest("Não é possível excluir o ingrediente, pois ele está associado a uma receita.");
     }
     _context.Ingredientes.Remove(ingrediente);
     await _context.SaveChangesAsync();
-
+    _logger.LogInformation("Ingrediente com {id} excluído com sucesso", id);
     return NoContent();
   }
 }
