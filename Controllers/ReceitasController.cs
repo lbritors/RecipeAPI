@@ -57,6 +57,7 @@ public class ReceitasController : ControllerBase
 
     if (ingredienteIds.Count != ingredientesExist.Count)
     {
+      _logger.LogWarning("Ingredientes inválidos para criação de receita: {IngredienteIds}", ingredienteIds);
       return BadRequest("Um ou mais ingredientes não existem");
     }
 
@@ -69,6 +70,7 @@ public class ReceitasController : ControllerBase
     .ThenInclude(ri => ri.Ingrediente)
     .FirstOrDefaultAsync(r => r.ReceitaId == receita.ReceitaId);
 
+    _logger.LogInformation("Receita criada com sucesso, ID: {ReceitaId}", receita?.ReceitaId);
     var readDto = _mapper.Map<ReceitaReadDto>(receita);
     return CreatedAtAction(nameof(GetById), new { id = readDto.ReceitaId }, readDto);
 
@@ -78,7 +80,12 @@ public class ReceitasController : ControllerBase
   public async Task<IActionResult> Update(int id, ReceitaUpdateDto dto)
   {
     _logger.LogInformation($"Recebido id da URL: {id}, dto.Id: {dto.ReceitaId}");
-    if (id != dto.ReceitaId) return BadRequest("Ids não coincidem");
+    if (id != dto.ReceitaId)
+    {
+      _logger.LogWarning("IDs não coincidem: id da URL = {Id}, dto.ReceitaId = {ReceitaId}", id, dto.ReceitaId);
+      return BadRequest("Ids não coincidem");
+
+    }
     if (!ModelState.IsValid) return BadRequest(ModelState);
     var ingredienteIds = dto.Ingredientes.Select(i => i.IngredienteId).ToList();
     var ingredientesExist = await _context.Ingredientes
@@ -88,13 +95,18 @@ public class ReceitasController : ControllerBase
 
     if (ingredienteIds.Count != ingredientesExist.Count)
     {
+      _logger.LogWarning("Ingredientes inválidos: {IngredienteIds}", ingredienteIds);
       return BadRequest("Um ou mais ingredientes não existem");
     }
 
     var receita = await _context.Receitas
     .Include(r => r.ReceitaIngredientes)
     .FirstOrDefaultAsync(r => r.ReceitaId == id);
-    if (receita == null) return NotFound();
+    if (receita == null)
+    {
+      _logger.LogWarning("Receita com id {Id} não encontrada.", id);
+      return NotFound();
+    }
 
     _mapper.Map(dto, receita);
     _context.ReceitaIngredientes.RemoveRange(receita.ReceitaIngredientes);
@@ -108,10 +120,16 @@ public class ReceitasController : ControllerBase
   public async Task<IActionResult> Delete(int id)
   {
     var receita = await _context.Receitas.FindAsync(id);
-    if (receita == null) return NotFound();
+    if (receita == null)
+    {
+      _logger.LogWarning("Receita com id {Id} não encontrada.", id);
+      return NotFound();
+    }
 
     _context.Receitas.Remove(receita);
     await _context.SaveChangesAsync();
+    _logger.LogInformation("Receita com id {Id} excluída com sucesso.", id);
+
     return NoContent();
 
   }

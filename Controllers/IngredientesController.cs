@@ -45,7 +45,6 @@ public class IngredientesController : ControllerBase
     if (!ModelState.IsValid)
     {
       _logger.LogWarning("Model state não válido {Errors}", ModelState);
-
       return BadRequest(ModelState);
     }
     var ingrediente = _mapper.Map<Ingrediente>(dto);
@@ -61,13 +60,17 @@ public class IngredientesController : ControllerBase
 
     if (id != dto.Id)
     {
-      _logger.LogWarning("Ingrediente {id} não encontrado", id);
+      _logger.LogWarning("Ingrediente {id} com id não coincidente", id);
       return BadRequest("IDs não coincidem");
     }
     if (!ModelState.IsValid) return BadRequest(ModelState);
 
     var ingrediente = await _context.Ingredientes.FindAsync(id);
-    if (ingrediente == null) return NotFound();
+    if (ingrediente == null)
+    {
+      _logger.LogWarning("Ingrediente com id {Id} não encontrado.", id);
+      return NotFound();
+    }
 
     _mapper.Map(dto, ingrediente);
     await _context.SaveChangesAsync();
