@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 public class ReceitaUpdateDto
 {
   [Required(ErrorMessage = "O ID da receita é obrigatório.")]
-  public int Id { get; set; }
+  public int ReceitaId { get; set; }
 
   [Required(ErrorMessage = "O nome da receita é obrigatório.")]
   [StringLength(100, MinimumLength = 1, ErrorMessage = "O nome da receita deve ter no máximo 100 caracteres.")]

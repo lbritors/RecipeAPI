@@ -9,9 +9,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(RecipeApi.Profiles.MappingProfile));
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-  options.UseInMemoryDatabase("ReceitasDb");
+  options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddControllers();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

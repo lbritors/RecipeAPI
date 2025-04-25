@@ -15,10 +15,13 @@ public class ReceitasController : ControllerBase
 {
   private readonly AppDbContext _context;
   private readonly IMapper _mapper;
-  public ReceitasController(AppDbContext context, IMapper mapper)
+
+  private readonly ILogger<ReceitasController> _logger;
+  public ReceitasController(AppDbContext context, IMapper mapper, ILogger<ReceitasController> logger)
   {
     _context = context;
     _mapper = mapper;
+    _logger = logger;
   }
 
   [HttpGet]
@@ -74,7 +77,8 @@ public class ReceitasController : ControllerBase
   [HttpPut("{id}")]
   public async Task<IActionResult> Update(int id, ReceitaUpdateDto dto)
   {
-    if (id != dto.Id) return BadRequest("Ids não coincidem");
+    _logger.LogInformation($"Recebido id da URL: {id}, dto.Id: {dto.ReceitaId}");
+    if (id != dto.ReceitaId) return BadRequest("Ids não coincidem");
     if (!ModelState.IsValid) return BadRequest(ModelState);
     var ingredienteIds = dto.Ingredientes.Select(i => i.IngredienteId).ToList();
     var ingredientesExist = await _context.Ingredientes

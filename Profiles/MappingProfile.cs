@@ -17,8 +17,11 @@ public class MappingProfile : Profile
     .MapFrom(src => src.Ingredientes));
 
     CreateMap<ReceitaUpdateDto, Receita>()
-    .ForMember(dest => dest.ReceitaIngredientes, opt => opt
-    .MapFrom(src => src.Ingredientes));
+       .ForMember(dest => dest.ReceitaId, opt => opt.MapFrom(src => src.ReceitaId))
+       .ForMember(dest => dest.ReceitaIngredientes, opt => opt.Ignore());
+    CreateMap<IngredienteQuantidadeDto, ReceitaIngrediente>()
+        .ForMember(dest => dest.ReceitaId, opt => opt.Ignore())
+        .ForMember(dest => dest.Ingrediente, opt => opt.Ignore());
 
     CreateMap<ReceitaIngrediente, IngredienteInfoDto>()
     .ForMember(dest => dest.IngredienteId, opt => opt
@@ -30,7 +33,6 @@ public class MappingProfile : Profile
     .ForMember(dest => dest.Quantidade, opt => opt
     .MapFrom(src => src.Quantidade));
 
-    CreateMap<IngredienteQuantidadeDto, ReceitaIngrediente>();
     CreateMap<Ingrediente, IngredienteReadDto>();
     CreateMap<IngredienteCreateDto, Ingrediente>();
     CreateMap<IngredienteUpdateDto, Ingrediente>();
